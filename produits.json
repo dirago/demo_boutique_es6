@@ -1,0 +1,21 @@
+{
+  "produits":[
+    {
+      "nom" : "Chaussettes",
+      "prixHT" :9
+    },
+    {
+      "nom" : "Pull",
+      "prixHT" :39
+    },
+    {
+      "nom" : "Pantalon",
+      "prixHT" :79
+    },
+    {
+      "nom" : "Tee shirt",
+      "prixHT" :19
+    }
+  ]
+
+}
