@@ -257,5 +257,3 @@ var VuePanier = function () {
 var boutique1 = new Boutique('produits.json', document.getElementById('boutique'));
 
 //var boutique2 = new Boutique( 'produits.json', document.getElementById('boutique2') );
-
-//# sourceMappingURL=boutique.js.map
