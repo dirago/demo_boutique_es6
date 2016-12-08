@@ -11,63 +11,32 @@
         #boutique{
             display: flex;
         }
-
         .product-box{
             background: #eee;
             border: 1px #ccc solid;
             width: 180px;
             display: inline-block;
             margin: 6px;
-            padding: 20px;
-        }
-        .product-box h2 {
-            text-align: center;
-        }
-        .product-box p {
-            text-align: center;
-        }
-        .product-box input {
-            padding: 5px;
-            width: 50px;
         }
         #panier{
             background: #ccc;
-            width: 300px;
-            padding: 30px;
+            flex-grow:1;
         }
-        table {
-            width: 100%;
-        }
-        tr {
-            margin-bottom: 30px;
-        }
-        table, tr, td, th {
-            padding: 10px;
-            text-align: center;
-        }
-        tr, td, th {
-            border-bottom: 1px solid black;
-
-        }
-        button {
-            margin-left: 10px;
-        }
-
     </style>
 </head>
 <body>
 
-    <div id="boutique">
+<div id="boutique">
 
-        <!--<div id="soldes">Soldes
-            <button onclick="document.getElementById('soldes').dispatchEvent(new CustomEvent('ajouteProduit', {bubbles:true, detail:'soldes'}))">+</button>
-        </div>-->
-    </div>
+    <!--<div id="soldes">Soldes
+        <button onclick="document.getElementById('soldes').dispatchEvent(new CustomEvent('ajouteProduit', {bubbles:true, detail:'soldes'}))">+</button>
+    </div>-->
+</div>
 
 
 
-    <!--<div id="boutique2"></div>-->
+<!--<div id="boutique2"></div>-->
 
-    <script type="text/javascript" src="boutique.js"></script>
+<script type="text/javascript" src="boutique.js"></script>
 </body>
 </html>

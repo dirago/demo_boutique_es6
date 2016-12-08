@@ -4,8 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "lite-server",
-    "build": "babel boutique.es6 --watch -o boutique.js"
+    "dev": "lite-server && babel boutique.es6 --watch -o boutique.js"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
