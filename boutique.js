@@ -213,7 +213,7 @@ var ChargeurDonnees = function () {
     _createClass(ChargeurDonnees, [{
         key: 'charge',
         value: function charge(cheminCatalogue, onLoadCallback) {
-            // fonction à appeler une fois chargement terminé
+            // fonction a appeller une fois chargement terminé
             this.onLoadCallback = onLoadCallback;
 
             // démarrage du chargement

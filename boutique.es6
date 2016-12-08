@@ -98,7 +98,7 @@ class Boutique{
         this.vueCatalogue.produits = this.produits;
 
         // » affichage panier
-        let divPanier = tag('div');
+        let divPanier= tag('div');
         divPanier.id = "panier";
         divPanier.innerText = 'Panier';
         this.container.appendChild(divPanier);
@@ -136,7 +136,7 @@ class VueProduit{
     }
     render(){
         this.productBox = tag('div');
-        this.productBox.classList.add('product-box');
+        this.productBox.classList.add('product-box')
 
         this.addTitle(this.produit.nom);
         this.addPrix(this.produit.prixHT);
@@ -190,7 +190,7 @@ class ChargeurDonnees{
     }
 
     charge(cheminCatalogue, onLoadCallback){
-        // fonction à appeler une fois chargement terminé
+        // fonction a appeller une fois chargement terminé
         this.onLoadCallback = onLoadCallback;
 
         // démarrage du chargement
