@@ -29,9 +29,43 @@ var Boutique = function () {
         this._achats = [];
 
         elementHTMLRef.addEventListener('ajouteAchat', function (e) {
-            this._achats.push(e.detail);
+            // vérifie si le produit a déjà été selectionné et ajouté au panier
+            if (this._achats.length > 0) {
+                var match = this._achats.filter(function (el) {
+                    return e.detail.produit.nom == el.produit.nom;
+                });
+                if (match.length > 0) {
+                    match[0].quantite += e.detail.quantite;
+                } else this._achats.push(e.detail);
+            } else this._achats.push(e.detail);
             this.vuePanier.achats = this._achats;
             console.log("ajouteAchat", this._achats);
+        }.bind(this));
+        // écouteur d'évènement pour le panier => Augmente la quantité
+        elementHTMLRef.addEventListener('augmenteQuantite', function (e) {
+            if (this._achats.length > 0) {
+                var match = this._achats.filter(function (el) {
+                    return e.detail.produit.nom == el.produit.nom;
+                });
+                if (match.length > 0) {
+                    match[0].quantite += e.detail.quantite;
+                } else this._achats.push(e.detail);
+            } else this._achats.push(e.detail);
+            this.vuePanier.achats = this._achats;
+            console.log("augmenteQuantite", this._achats);
+        }.bind(this));
+        // écouteur d'évènement pour le panier => Baisse la quantité
+        elementHTMLRef.addEventListener('baisseQuantite', function (e) {
+            if (this._achats.length > 0) {
+                var match = this._achats.filter(function (el) {
+                    return e.detail.produit.nom == el.produit.nom;
+                });
+                if (match.length > 0) {
+                    match[0].quantite += e.detail.quantite;
+                } else this._achats.push(e.detail);
+            } else this._achats.push(e.detail);
+            this.vuePanier.achats = this._achats;
+            console.log("baisseQuantite", this._achats);
         }.bind(this));
 
         this.container = elementHTMLRef;
@@ -55,8 +89,8 @@ var Boutique = function () {
             // » affichage panier
             var divPanier = tag('div');
             divPanier.id = "panier";
-            this.container.appendChild(divPanier);
             divPanier.innerText = 'Panier';
+            this.container.appendChild(divPanier);
             this.vuePanier = new VuePanier(divPanier);
 
             //this.vuePanier.achats = [];
@@ -151,7 +185,7 @@ var VueProduit = function () {
         key: 'addPrix',
         value: function addPrix(prix) {
             var productPrice = tag('p');
-            productPrice.innerText = prix;
+            productPrice.innerText = prix + ' €';
             this.productBox.appendChild(productPrice);
         }
     }, {
@@ -179,7 +213,7 @@ var ChargeurDonnees = function () {
     _createClass(ChargeurDonnees, [{
         key: 'charge',
         value: function charge(cheminCatalogue, onLoadCallback) {
-            // fonction a appeller une fois chargement terminé
+            // fonction à appeler une fois chargement terminé
             this.onLoadCallback = onLoadCallback;
 
             // démarrage du chargement
@@ -220,7 +254,14 @@ var VuePanier = function () {
     _createClass(VuePanier, [{
         key: 'achats',
         set: function set(values) {
+            var _this2 = this;
+
+            this._totalHT = 0;
             this._achats = values;
+            // ajoute prix et quantités au total HT puis TTC
+            this._achats.map(function (achat) {
+                _this2.addToTotal(achat.produit.prixHT, achat.quantite);
+            });
             this.render();
         }
     }]);
@@ -230,24 +271,153 @@ var VuePanier = function () {
 
         this.container = elementHTMLRef;
         this._achats = [];
+        this._totalHT = 0;
+        this._totalTTC = 0;
         this.render();
     }
 
     _createClass(VuePanier, [{
         key: 'render',
         value: function render() {
-            var _this2 = this;
-
             // afficher ds le container de VuePanier la liste des achats
-            this.container.innerHTML = '';
-            var achatRenderers = this._achats.map(function (achat) {
-                var vueAchat = tag('div');
-                vueAchat.innerText = achat.produit.nom + ' / ' + achat.quantite * achat.produit.prixHT;
+            this.container.innerHTML = 'Panier';
+            this.addTable(this.container);
+
+            var totalHT = tag('p');
+            totalHT.innerText = 'Total HT : ' + this._totalHT.toFixed(2) + '€';
+            this.container.appendChild(totalHT);
+            var totalTTC = tag('p');
+            totalTTC.innerText = 'Total TTC : ' + this._totalTTC.toFixed(2) + '€';
+            this.container.appendChild(totalTTC);
+        }
+
+        /**
+         * création du tableau de produits sélectionnés
+         * @param container
+         */
+
+    }, {
+        key: 'addTable',
+        value: function addTable(container) {
+            var _this3 = this;
+
+            var tableau = tag('table');
+            tableau.innerHTML = "<tr><td>Produit</td><td>Quantité</td><td>Prix HT</td></tr>";
+            container.appendChild(tableau);
+            // filter pour "supprimer" un article du panier où la quantité est passée à 0
+            var achatRenderers = this._achats.filter(function (achat) {
+                return achat.quantite > 0;
+            }).map(function (achat) {
+                // création des rows pour chaque article
+                var vueAchat = tag('tr');
+                var productDiv = tag('td');
+                var quantiteDiv = tag('td');
+                var prixDiv = tag('td');
+                productDiv.innerText = achat.produit.nom;
+                quantiteDiv.innerText = achat.quantite;
+                prixDiv.innerText = achat.quantite * achat.produit.prixHT + "€";
+                vueAchat.appendChild(productDiv);
+                vueAchat.appendChild(quantiteDiv);
+                vueAchat.appendChild(prixDiv);
+                _this3.addBtnMoins(quantiteDiv, achat.produit.nom, achat.produit.prixHT, achat.quantite);
+                _this3.addBtnPlus(quantiteDiv, achat.produit.nom, achat.produit.prixHT, achat.quantite);
                 return vueAchat;
             });
             achatRenderers.forEach(function (renderer) {
-                return _this2.container.appendChild(renderer);
+                return tableau.appendChild(renderer);
             });
+        }
+
+        /**
+         * création du bouton baissant la quantité d'un produit déjà sélectionné
+         * @param container
+         * @param product
+         * @param prixHT
+         * @param quantite
+         */
+
+    }, {
+        key: 'addBtnMoins',
+        value: function addBtnMoins(container, product, prixHT, quantite) {
+            var btSuppr = tag('button');
+            btSuppr.dataset.product = product;
+            btSuppr.dataset.prixHT = prixHT;
+            btSuppr.addEventListener('click', this.baisseQuantite.bind(this));
+            btSuppr.innerText = '-';
+            container.appendChild(btSuppr);
+        }
+
+        /**
+         * création du bouton augmentant la quantité d'un produit déjà sélectionné
+         * @param container
+         * @param product
+         * @param prixHT
+         * @param quantite
+         */
+
+    }, {
+        key: 'addBtnPlus',
+        value: function addBtnPlus(container, product, prixHT, quantite) {
+            var btAdd = tag('button');
+            btAdd.dataset.product = product;
+            btAdd.dataset.prixHT = prixHT;
+            btAdd.addEventListener('click', this.augmenteQuantite.bind(this));
+            btAdd.innerText = '+';
+            container.appendChild(btAdd);
+        }
+        /**
+         * ajoute chaque nouvel achat au total HT
+         * @param article    String
+         * @param prix       Int
+         * @param quantite   Int
+         */
+
+    }, {
+        key: 'addToTotal',
+        value: function addToTotal(prixHT, quantite) {
+            this._totalHT += prixHT * quantite;
+            this.convertToTTC(this._totalHT, 0.2);
+        }
+        /**
+         * conversion du total HT en total TTC pour un double affichage
+         * @param totalHT
+         * @param tauxTVA
+         */
+
+    }, {
+        key: 'convertToTTC',
+        value: function convertToTTC(totalHT, tauxTVA) {
+            this._totalTTC = totalHT + totalHT * tauxTVA;
+            console.log('total TTC', this._totalTTC.toFixed(2) + '€');
+        }
+
+        /**
+         * création de l'écouteur d'évènement pour baisser la quantité d'un article dans le panier
+         * @param ev
+         */
+
+    }, {
+        key: 'baisseQuantite',
+        value: function baisseQuantite(ev) {
+            var eventBaisseQuantite = new CustomEvent('baisseQuantite', {
+                bubbles: true,
+                detail: new Achat(new Produit(ev.currentTarget.dataset.product, parseInt(ev.currentTarget.dataset.prixHT)), -1)
+            });
+            this.container.dispatchEvent(eventBaisseQuantite);
+        }
+        /**
+         * création de l'écouteur d'évènement pour augmenter la quantité d'un article dans le panier
+         * @param ev
+         */
+
+    }, {
+        key: 'augmenteQuantite',
+        value: function augmenteQuantite(ev) {
+            var eventAugmenteQuantite = new CustomEvent('augmenteQuantite', {
+                bubbles: true,
+                detail: new Achat(new Produit(ev.currentTarget.dataset.product, parseInt(ev.currentTarget.dataset.prixHT)), 1)
+            });
+            this.container.dispatchEvent(eventAugmenteQuantite);
         }
     }]);
 
